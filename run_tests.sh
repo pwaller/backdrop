@@ -15,16 +15,21 @@ function display_result {
   fi
 }
 
-# If you're not already in a virtualenv and you're using virtualenvwrapper
-if [ -z "$VIRTUAL_ENV" -a -n "$WORKON_HOME" ]; then
-  basedir=$(dirname $0)
-  venvdir=$WORKON_HOME/$(basename $(cd $(dirname $0) && pwd -P))
+if [ -z "$VIRTUAL_ENV" ]; then # not in a virtualenv
+  if [ -n "$WORKON_HOME" ]; then # we are using virtualenvwrapper
+    basedir=$(dirname $0)
+    venvdir=$WORKON_HOME/$(basename $(cd $(dirname $0) && pwd -P))
 
-  if [ ! -d "$venvdir" ]; then
-    virtualenv $venvdir
+    if [ ! -d "$venvdir" ]; then
+      virtualenv $venvdir
+    fi
+
+    source "$venvdir/bin/activate"
+  else
+    # not in a virtualenv and not using virtualenvwrapper
+    echo -e "\033[31mError: Unable to run tests - must activate virtualenv\033[0m"
+    exit 1
   fi
-
-  source "$venvdir/bin/activate"
 fi
 
 
